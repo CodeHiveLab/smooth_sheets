@@ -270,7 +270,7 @@ class _ContentScrollDrivenSheetActivity extends SheetActivity
     }
 
     // when user drag end, give it a appropriate velocity, keep more smooth
-    double _velocity = velocity.sign * max(velocity.abs(), 2500);
+    double _velocity = velocity.sign * max(velocity.abs(), 3000);
     final scrollSimulation = position.physics
         .createBallisticSimulation(scrollMetricsForPhysics(position), _velocity);
     if (scrollSimulation != null) {

@@ -16,7 +16,7 @@ abstract class SheetPhysics {
   final SpringDescription? _spring;
   SpringDescription get spring {
     return _spring ?? SpringDescription.withDampingRatio(
-      mass: 0.2,
+      mass: 0.5,
       stiffness: 100.0,
       ratio: 1,
     );

@@ -6,6 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/cookbook/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/cookbook/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/cookbook/build" />
+      <excludeFolder url="file://$MODULE_DIR$/cookbook/ios/Runner.xcworkspace/xcuserdata" />
       <excludeFolder url="file://$MODULE_DIR$/package/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/package/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/package/build" />

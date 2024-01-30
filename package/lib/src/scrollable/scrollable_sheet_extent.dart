@@ -79,6 +79,9 @@ class ScrollableSheetExtent extends SingleChildSheetExtent {
     // TODO: Stop the content scrolling when the new activity is not '_ContentScrollDrivenSheetActivity'.
     super.beginActivity(activity);
   }
+
+  @override
+  bool get dragOnEdge => _contentScrollPositions.first.dragOnEdge;
 }
 
 class _ContentScrollDrivenSheetActivity extends SheetActivity
@@ -144,9 +147,16 @@ class _ContentScrollDrivenSheetActivity extends SheetActivity
       }
       // If the sheet is at the top, scroll the content up as much as possible.
       if (pixels!.isGreaterThanOrApprox(maxPixels) &&
-          position.extentAfter > 0) {
+          position.extentAfter > 0 && !position.onMinPixel) {
         position.correctPixels(min(position.pixels + delta, maxScrollPixels));
         delta -= position.pixels - oldScrollPixels;
+      }
+      // fling from bottom to top, make a stretching effect
+      if (pixels!.isApprox(maxPixels) && position.onMinPixel) {
+        final physicsAppliedDelta = min<double>(_applyPhysicsToOffset(delta), 6);
+        assert(physicsAppliedDelta.isLessThanOrApprox(delta));
+        correctPixels(pixels! + physicsAppliedDelta);
+        delta -= physicsAppliedDelta;
       }
       // If the content cannot be scrolled up anymore, drag the sheet up
       // to make a stretching effect (if needed).
@@ -259,8 +269,10 @@ class _ContentScrollDrivenSheetActivity extends SheetActivity
       return DelegationResult.handled(IdleScrollActivity(position));
     }
 
+    // when user drag end, give it a appropriate velocity, keep more smooth
+    double _velocity = velocity.sign * max(velocity.abs(), 2500);
     final scrollSimulation = position.physics
-        .createBallisticSimulation(scrollMetricsForPhysics(position), velocity);
+        .createBallisticSimulation(scrollMetricsForPhysics(position), _velocity);
     if (scrollSimulation != null) {
       return DelegationResult.handled(
         _SheetContentBallisticScrollActivity(
@@ -280,6 +292,10 @@ class _ContentScrollDrivenSheetActivity extends SheetActivity
   void onWillBallisticScrollCancel() {
     delegate.goBallistic(0);
   }
+
+
+  @override
+  bool get onMinPixel => delegate.metrics.pixels.isLessThanOrApprox(delegate.metrics.minPixels);
 }
 
 class _DragInterruptibleBallisticSheetActivity extends BallisticSheetActivity
@@ -309,6 +325,10 @@ class _DragInterruptibleBallisticSheetActivity extends BallisticSheetActivity
     _cancel();
     return const DelegationResult.notHandled();
   }
+
+
+  @override
+  bool get onMinPixel => delegate.metrics.pixels.isLessThanOrApprox(delegate.metrics.minPixels);
 }
 
 class _SheetContentBallisticScrollActivity extends BallisticScrollActivity {

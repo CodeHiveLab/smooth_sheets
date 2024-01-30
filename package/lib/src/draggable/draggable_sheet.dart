@@ -79,6 +79,9 @@ class DraggableSheetExtent extends SingleChildSheetExtent {
       initialExtent: initialExtent,
     ));
   }
+
+  @override
+  bool get dragOnEdge => false;
 }
 
 class _IdleDraggableSheetActivity extends IdleSheetActivity {

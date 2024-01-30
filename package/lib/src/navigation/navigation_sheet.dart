@@ -208,6 +208,10 @@ class _NavigationSheetExtent extends SheetExtent {
       }
     }
   }
+
+  @override
+  // set to false, because I don't know how to detect whether drag begin on content offset 0
+  bool get dragOnEdge => false;
 }
 
 class _TransitionSheetActivity extends SheetActivity {

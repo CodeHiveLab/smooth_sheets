@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
+import 'package:smooth_sheets/src/internal/double_utils.dart';
 import 'package:smooth_sheets/src/scrollable/scrollable_sheet_extent.dart';
 
 @internal
@@ -51,6 +52,9 @@ mixin SheetContentScrollPositionDelegate {
   ) {
     return const DelegationResult.notHandled();
   }
+
+  // whether the sheet stop on bottom
+  bool get onMinPixel;
 }
 
 @internal
@@ -66,6 +70,8 @@ class SheetContentScrollPosition extends ScrollPositionWithSingleContext {
 
   ValueGetter<SheetContentScrollPositionDelegate?>? delegate;
   SheetContentScrollPositionDelegate? get _delegate => delegate?.call();
+  bool dragOnEdge = true;
+  bool onMinPixel = true;
 
   @override
   void applyUserOffset(double delta) {
@@ -112,6 +118,8 @@ class SheetContentScrollPosition extends ScrollPositionWithSingleContext {
 
   @override
   Drag drag(DragStartDetails details, VoidCallback dragCancelCallback) {
+    dragOnEdge = pixels.isApprox(0);
+    onMinPixel = _delegate?.onMinPixel ?? true;
     if (_delegate != null) {
       _delegate!.onDrag(details);
     }

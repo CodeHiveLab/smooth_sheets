@@ -153,9 +153,9 @@ class _ContentSheet extends StatelessWidget {
         final parentHeight = constraints.maxHeight;
         final appbarHeight = MediaQuery.of(context).padding.top;
         final handleHeight = const _ContentSheetHandle().preferredSize.height;
-        final sheetHeight = parentHeight - appbarHeight + handleHeight;
+        final sheetHeight = parentHeight - appbarHeight + handleHeight - 100;
         final minSheetExtent =
-            Extent.pixels(handleHeight + systemUiInsets.bottom);
+            Extent.pixels(handleHeight + systemUiInsets.bottom + 200);
 
         const sheetShape = RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
@@ -173,7 +173,7 @@ class _ContentSheet extends StatelessWidget {
               // The greater 'maxFlingVelocityToSnap' is, the more likely
               // the sheet will snap to the nearest stop position while scrolling.
               // Try to increase/decrease this value to see the difference.
-              maxFlingVelocityToSnap: 4000,
+              maxFlingVelocityToSnap: 800,
             ),
           ),
         );
@@ -189,7 +189,7 @@ class _ContentSheet extends StatelessWidget {
               shape: sheetShape,
               child: Column(
                 children: [
-                  _ContentSheetHandle(),
+                  // _ContentSheetHandle(),
                   Expanded(child: _HouseList()),
                 ],
               ),
@@ -262,16 +262,18 @@ class _HouseList extends StatelessWidget {
       },
     );
 
+    return result;
+
     // Hide the list when the sheet is dragged down.
-    return FadeTransition(
-      opacity: ExtentDrivenAnimation(
-        controller: DefaultSheetController.of(context),
-        initialValue: 1,
-      ).drive(
-        CurveTween(curve: Curves.easeOutCubic),
-      ),
-      child: result,
-    );
+    // return FadeTransition(
+    //   opacity: ExtentDrivenAnimation(
+    //     controller: DefaultSheetController.of(context),
+    //     initialValue: 1,
+    //   ).drive(
+    //     CurveTween(curve: Curves.easeOutCubic),
+    //   ),
+    //   child: result,
+    // );
   }
 }
 
@@ -558,4 +560,4 @@ class _HouseCard extends StatelessWidget {
   }
 }
 
-final _houses = List.generate(50, (_) => _House.random());
+final _houses = List.generate(10, (_) => _House.random());

@@ -190,6 +190,8 @@ mixin MaybeSheetMetrics {
   double? get maxPixels;
   Size? get contentDimensions;
   Size? get viewportDimensions;
+  // whether drag begin on content offset = 0
+  bool get dragOnEdge;
 
   bool get hasPixels =>
       pixels != null &&
@@ -304,6 +306,10 @@ class SheetMetricsSnapshot with SheetMetrics {
         contentDimensions: contentDimensions,
         viewportDimensions: viewportDimensions,
       ).toString();
+
+  @override
+  // set to false, because I don't know how to detect whether drag begin on content offset 0
+  bool get dragOnEdge => false;
 }
 
 class _SheetMetricsBox with SheetMetrics {
@@ -325,6 +331,9 @@ class _SheetMetricsBox with SheetMetrics {
 
   @override
   Size get viewportDimensions => _source.viewportDimensions!;
+
+  @override
+  bool get dragOnEdge => _source.dragOnEdge;
 }
 
 abstract class SheetContext {

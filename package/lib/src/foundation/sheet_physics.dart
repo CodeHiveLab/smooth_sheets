@@ -15,7 +15,11 @@ abstract class SheetPhysics {
 
   final SpringDescription? _spring;
   SpringDescription get spring {
-    return _spring ?? const ScrollPhysics().spring;
+    return _spring ?? SpringDescription.withDampingRatio(
+      mass: 0.2,
+      stiffness: 100.0,
+      ratio: 1,
+    );
   }
 
   double adjustPixelsForNewBoundaryConditions(
@@ -125,7 +129,9 @@ class SnapToNearest implements SnappingSheetBehavior {
 
   @override
   double? findSnapPixels(double scrollVelocity, SheetMetrics metrics) {
-    if (_shouldSnap(scrollVelocity, metrics)) {
+    // if drag begin on content offset 0, don't snap
+    final shouldSnap = _shouldSnap(scrollVelocity, metrics);
+    if (shouldSnap || !metrics.dragOnEdge) {
       return _findNearestPixelsIn(snapTo, metrics);
     } else {
       return null;
@@ -177,15 +183,22 @@ class SnappingSheetPhysics extends SheetPhysics {
 
   @override
   bool shouldGoBallistic(double velocity, SheetMetrics metrics) {
-    // TODO: Support flinging gestures.
+    // TODO: Support fling gestures.
     final snapPixels = snappingBehavior.findSnapPixels(velocity, metrics);
     final currentPixels = metrics.pixels;
 
-    if (snapPixels != null && !currentPixels.isApprox(snapPixels)) {
-      return true;
+    bool ret;
+    if (snapPixels != null && currentPixels.isOutOfRange(snapPixels - 5, snapPixels + 5)) {
+      ret = true;
+    } else if (snapPixels != null && !currentPixels.isOutOfRange(snapPixels - 5, snapPixels + 5)) {
+      // because of th bouncing animation, use range to determine whether current view stop on snap
+      // even the animation on going, there is a chance to cater user drag behaviour
+      // of course, if there is a way to know that the view is on snap, it's better
+      ret = false;
     } else {
-      return super.shouldGoBallistic(velocity, metrics);
+      ret = super.shouldGoBallistic(velocity, metrics);
     }
+    return ret;
   }
 
   @override
